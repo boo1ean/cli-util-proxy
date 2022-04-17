@@ -1,27 +1,23 @@
 {
   "name": "cli-util-proxy",
   "packageManager": "yarn@3.2.0",
-  "main": "dist/wrapper.js",
-  "types": "dist/wrapper.d.ts",
+  "main": "dist/create-wrapper.js",
+  "types": "dist/create-wrapper.d.ts",
   "scripts": {
     "prepublish": "yarn test && yarn build",
     "build": "rm -rf ./dist && tsc",
-    "test": "jest --runInBand --rootDir ./tests --verbose",
-    "test-watch": "chokidar \"src/**\" \"tests/**\" -c \"yarn build && jest --runInBand --rootDir ./tests --verbose\"",
-    "lint": "eslint ./src"
+    "test": "yarn build && jest --runInBand --rootDir ./tests --verbose",
+    "test-watch": "chokidar \"src/**\" \"tests/**\" -c \"yarn build && jest --runInBand --rootDir ./tests --verbose\""
   },
   "dependencies": {
     "@types/minimist": "^1.2.2",
     "debug": "^4.3.4",
-    "minimist": "^1.2.6",
-    "yargs": "^17.4.1",
-    "yargs-parser": "^21.0.1"
+    "minimist": "^1.2.6"
   },
   "devDependencies": {
     "@types/debug": "^4.1.7",
     "@types/jest": "^27.4.1",
     "@types/node": "^17.0.24",
-    "@types/yargs": "^17.0.10",
     "chokidar-cli": "^3.0.0",
     "jest": "^27.5.1",
     "jest-pnp-resolver": "^1.2.2",

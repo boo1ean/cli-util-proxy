@@ -18,4 +18,14 @@ test('Basic wrapper', async () => {
 
     const result6 = execSync(`DEBUG=cli-util-proxy ${__dirname}/wrapped-echo.js asdfqwer`)
     expect(result6.toString()).toContain('asdfqwer')
+
+    const result7 = execSync(`DEBUG=cli-util-proxy ${__dirname}/wrapped-echo.js many-opts -v -q -f file --name name-value`)
+    expect(result7.toString()).toContain('yes there are many opts -v -q -f file --name name-value')
+
+    const result8 = execSync(`DEBUG=cli-util-proxy ${__dirname}/wrapped-echo.js opts-override  --verbose -f no --name nono`)
+    expect(result8.toString()).toContain('opts override -f yes --name sure --verbose')
+
+    const result9 = execSync(`DEBUG=cli-util-proxy ${__dirname}/wrapped-echo.js c1 c4`)
+    expect(result9.toString()).toContain('c1 c4')
+
 });

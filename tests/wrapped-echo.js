@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
-const Wrapper = require('../')
+const createWrapper = require('../')
 
-const echo = new Wrapper.default('echo')
+const echo = createWrapper.default('echo')
 
 echo
     .proxy('sample1', async (args) => {
@@ -23,4 +23,12 @@ echo
     .proxy('set', async (args) => {
         return `set --key ${args.key}`
     })
+    .proxy('many-opts', async (args) => {
+        return 'yes there are many opts'
+    })
+    .appendOptions()
+    .proxy('opts-override', async (args) => {
+        return 'opts override -f yes --name sure'
+    })
+    .appendOptions()
     .run()

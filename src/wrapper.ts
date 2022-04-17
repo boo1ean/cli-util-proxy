@@ -1,13 +1,13 @@
 import { spawn } from 'child_process'
 import createDebugLog from 'debug'
 import minimist from 'minimist'
-
 const debug = createDebugLog('cli-util-proxy')
 
 type CommandTransformFunction = (args: any) => Promise<string>;
 type ProxyCommandConfig = {
     path: string;
     transform: CommandTransformFunction;
+    shouldAppendOptions?: boolean;
 }
 
 export default class Wrapper {
@@ -39,11 +39,21 @@ export default class Wrapper {
         }
     }
 
-    getTransformedCommand (argv: string[]) {
+    async getTransformedCommand (argv: string[]) {
         const args = minimist(argv)
-        for (const { path, transform } of this.#proxies) {
-            if (isMatching(path, args._)) {
-                return transform(args)
+        for (const { path, transform, shouldAppendOptions } of this.#proxies) {
+            const params = isMatchingCommand(path, args._)
+            if (params) {
+                let transformedCommand = await transform({
+                    ...args,
+                    params,
+                })
+
+                if (shouldAppendOptions) {
+                    transformedCommand += ' ' + serializeOptions(args, transformedCommand).join(' ')
+                }
+
+                return transformedCommand
             }
         }
         throw new Error()
@@ -55,9 +65,14 @@ export default class Wrapper {
             stdio: 'inherit'
         });
     }
+
+    appendOptions () {
+        this.#proxies[this.#proxies.length - 1].shouldAppendOptions = true
+        return this
+    }
 }
 
-function isMatching (command: string, args: string[]): any {
+function isMatchingCommand (command: string, args: string[]): any {
     const commandTokens = command.split(' ')
     const mapping: any = {}
     for (const i in commandTokens) {
@@ -78,4 +93,25 @@ function isMatching (command: string, args: string[]): any {
         }
     }
     return mapping
+}
+
+function serializeOptions (args: any, command: string) {
+    const options = { ...args }
+    delete options._
+    const result = []
+    for (const key in options) {
+        const opt = getOptPrefix(key)
+        if (command.includes(` ${opt} `) || command.endsWith(` ${opt}`)) {
+            continue
+        }
+        result.push(opt)
+        if (options[key] !== true) {
+            result.push(options[key])
+        }
+    }
+    return result
+}
+
+function getOptPrefix (key: string) {
+    return (key.length === 1 ? '-' : '--') + key
 }
