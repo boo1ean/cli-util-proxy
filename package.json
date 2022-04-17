@@ -1,5 +1,6 @@
 {
   "name": "cli-util-proxy",
+  "version": "0.1.1",
   "packageManager": "yarn@3.2.0",
   "main": "dist/create-wrapper.js",
   "types": "dist/create-wrapper.d.ts",

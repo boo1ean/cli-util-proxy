@@ -1,1 +1,7 @@
-src/
+src
+tests
+jest.config.js
+tsconfig.json
+.vscode
+.yarn
+.editorconfig
