@@ -3,12 +3,15 @@ import createDebugLog from 'debug'
 import minimist from 'minimist'
 const debug = createDebugLog('cli-util-proxy')
 
-type CommandTransformFunction = (args: any) => Promise<string>;
+type CommandTransformFunction = (args: any, done: () => any) => Promise<string>;
+
 type ProxyCommandConfig = {
     path: string;
     transform: CommandTransformFunction;
     shouldAppendOptions?: boolean;
 }
+
+const DoneSymbol = Symbol()
 
 export default class Wrapper {
     #command: string
@@ -34,7 +37,11 @@ export default class Wrapper {
             debug(`Transformed command: ${transformedCommand}`)
             return this.runnDefaultCommand(transformedCommand.split(' '))
         } catch (error) {
-            debug(`Got exception: ${error.message}`)
+            if (error === DoneSymbol) {
+                debug(`Done is called, no proxy`)
+                return
+            }
+            debug(`Got exception: ${error?.message}`)
             return this.runnDefaultCommand(argv)
         }
     }
@@ -44,10 +51,8 @@ export default class Wrapper {
         for (const { path, transform, shouldAppendOptions } of this.#proxies) {
             const params = isMatchingCommand(path, args._)
             if (params) {
-                let transformedCommand = await transform({
-                    ...args,
-                    params,
-                })
+                const transformArgs = { ...args, params }
+                let transformedCommand = await transform(transformArgs, () => { throw DoneSymbol })
 
                 if (shouldAppendOptions) {
                     transformedCommand += ' ' + serializeOptions(args, transformedCommand).join(' ')

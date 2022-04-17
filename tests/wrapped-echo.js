@@ -31,4 +31,8 @@ echo
         return 'opts override -f yes --name sure'
     })
     .appendOptions()
+    .proxy('done', async (args, done) => {
+        console.log('DONE')
+        return done()
+    })
     .run()

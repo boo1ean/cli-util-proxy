@@ -28,4 +28,6 @@ test('Basic wrapper', async () => {
     const result9 = execSync(`DEBUG=cli-util-proxy ${__dirname}/wrapped-echo.js c1 c4`)
     expect(result9.toString()).toContain('c1 c4')
 
+    const result10 = execSync(`DEBUG=cli-util-proxy ${__dirname}/wrapped-echo.js done alalalal a a a a`)
+    expect(result10.toString()).toContain('DONE')
 });

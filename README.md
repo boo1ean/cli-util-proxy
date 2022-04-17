@@ -12,6 +12,8 @@ npm i cli-util-proxy
 
 Add shortcuts to `kubectl`
 
+NOTE: `args` - is `process.argv` parsed by [minimist](https://github.com/substack/minimist) + `params` property which contains positional params
+
 ```javascript
 #!/usr/bin/env node
 const { createProxy } = require('cli-util-proxy') 
@@ -19,6 +21,10 @@ const { createProxy } = require('cli-util-proxy')
 createProxy('kubectl')
 	.proxy('g p', () => 'get pods')
 	.proxy('c c', () => 'config current-context')
+	.proxy('l <query>', async args => {
+		const podName = await findPodNameByQuery(args.params.query)
+		return `logs ${podName}`
+	})
 	.run()
 ```
 
@@ -47,4 +53,16 @@ k config current-context
 
 # fallbacks to kubectl
 k config view
+```
+
+## Interrupt command and don't proxy forward
+
+This will replace `kubectl get pods`
+
+```javascript
+createProxy('kubectl')
+	.proxy('get pods', (args, done) => {
+		console.log('No pods for you!')
+		done()
+	})
 ```
