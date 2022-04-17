@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
-const createWrapper = require('../')
+const { createProxy } = require('../')
 
-const echo = createWrapper.default('echo')
+const echo = createProxy('echo')
 
 echo
     .proxy('sample1', async (args) => {

@@ -14,9 +14,9 @@ Add shortcuts to `kubectl`
 
 ```javascript
 #!/usr/bin/env node
-const proxy = require('cli-util-proxy') 
+const { createProxy } = require('cli-util-proxy') 
 
-proxy('kubectl')
+createProxy('kubectl')
 	.proxy('g p', () => 'get pods')
 	.proxy('c c', () => 'config current-context')
 	.run()

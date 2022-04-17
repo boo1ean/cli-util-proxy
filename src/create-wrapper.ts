@@ -1,5 +1,5 @@
 import Wrapper from './wrapper'
 
-export default function createWrapper (command: string) {
+export function createProxy (command: string) {
     return new Wrapper(command);
 }
